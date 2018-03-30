@@ -19,7 +19,7 @@ describe('NumberBlackBox Unit tests', function() {
 
 # FIXME: change '1' to 'hello'
   it('add() should return NaN if a NaN value is passed in as argument', function() {
-    expect(numberBlackBox.add('1')).to.be.NaN;
+    expect(numberBlackBox.add('hello')).to.be.NaN;
   });
 
   // subtract
