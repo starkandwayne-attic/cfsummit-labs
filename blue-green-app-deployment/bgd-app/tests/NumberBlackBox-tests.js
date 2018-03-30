@@ -17,6 +17,7 @@ describe('NumberBlackBox Unit tests', function() {
     expect(numberBlackBox.add(1)).to.equal(numberBlackBox.getNumber());
   });
 
+# FIXME: change '1' to 'hello'
   it('add() should return NaN if a NaN value is passed in as argument', function() {
     expect(numberBlackBox.add('1')).to.be.NaN;
   });
