@@ -1,17 +1,10 @@
 
 
 #### /VAR/VCAP/STORE/CONTAINERS/GITLAB/GITLAB.RB
-
+```
  gitlab_rails['omniauth_enabled'] = true
  gitlab_rails['omniauth_allow_single_sign_on'] = ['oauth2_generic']
-# gitlab_rails['omniauth_sync_email_from_provider'] = 'saml'
-# gitlab_rails['omniauth_sync_profile_from_provider'] = ['saml']
-# gitlab_rails['omniauth_sync_profile_attributes'] = ['email']
-# gitlab_rails['omniauth_auto_sign_in_with_provider'] = 'saml'
- gitlab_rails['omniauth_block_auto_created_users'] = true
-# gitlab_rails['omniauth_auto_link_ldap_user'] = false
-# gitlab_rails['omniauth_auto_link_saml_user'] = false
-# gitlab_rails['omniauth_external_providers'] = ['twitter', 'google_oauth2']
+ gitlab_rails['omniauth_block_auto_created_users'] = false
  gitlab_rails['omniauth_providers'] = [
    {
      "name" => "oauth2_generic",
@@ -35,12 +28,13 @@
      }
    }
  ]
-
+```
 
 
 
 ######## UUAC
 
+```
  uaac client get gitlab                                                                       
   scope: scim.userids openid oauth.approvals
   client_id: gitlab
@@ -51,7 +45,7 @@
   authorities: uaa.none
   name: gitlab
   lastmodified: 1522335054357
-
+```
 
 ######## GET/PLACE SSL CERT
 ### https://docs.gitlab.com/omnibus/settings/ssl.html
