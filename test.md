@@ -52,3 +52,16 @@
   name: gitlab
   lastmodified: 1522335054357
 
+
+######## GET/PLACE SSL CERT
+### https://docs.gitlab.com/omnibus/settings/ssl.html
+# Place your custom (Root CA) or a self-signed certificate in the /etc/gitlab/trusted-certs/ directory; For example, /etc/gitlab/trusted-certs/customcacert.pem. 
+# Note: The certificate must be either DER- or PEM-encoded.
+# Run gitlab-ctl reconfigure
+
+get the uaa_ssl from ../bucc/state/creds.yml
+
+`bosh int ~/workspace/bucc/state/creds.yml --path /uaa_ssl/ca > uaa.pem'
+
+`bosh ssh -d gitlab`
+copy file to /var/vcap/store/containers/gitlab/trusted-certs/
