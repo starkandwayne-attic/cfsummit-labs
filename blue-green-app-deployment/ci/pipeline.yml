@@ -57,6 +57,7 @@ jobs:
     params:
       manifest: app-manifest-output/manifest.yml
       path: concourse-pipeline-samples/blue-green-app-deployment/bgd-app
+      current_app_name: ((pws-app-suffix))
 
 - name: load-tests
   serial: true
@@ -98,13 +99,18 @@ jobs:
       PWS_USER: ((deploy-username))
       PWS_PWD: ((deploy-password))
       PWS_SPACE: ((pws-space))
-  - task: switch-app-routes
-    file: concourse-pipeline-samples/blue-green-app-deployment/ci/tasks/update-routes.yml
+  # - task: switch-app-routes
+  #   file: concourse-pipeline-samples/blue-green-app-deployment/ci/tasks/update-routes.yml
+  #   params:
+  #     PWS_APP_SUFFIX: ((pws-app-suffix))
+  #     PWS_APP_DOMAIN: ((pws-app-domain))
+  #     PWS_API: ((pws-api))
+  #     PWS_ORG: ((pws-organization))
+  #     PWS_USER: ((deploy-username))
+  #     PWS_PWD: ((deploy-password))
+  #     PWS_SPACE: ((pws-space))
+  - put: PWS
     params:
-      PWS_APP_SUFFIX: ((pws-app-suffix))
-      PWS_APP_DOMAIN: ((pws-app-domain))
-      PWS_API: ((pws-api))
-      PWS_ORG: ((pws-organization))
-      PWS_USER: ((deploy-username))
-      PWS_PWD: ((deploy-password))
-      PWS_SPACE: ((pws-space))
+      manifest: app-manifest-output/manifest.yml
+      path: concourse-pipeline-samples/blue-green-app-deployment/bgd-app
+      current_app_name: ((pws-app-suffix))
