@@ -10,6 +10,10 @@ instance_groups:
   stemcell: default
   networks: [{name: default}]
   jobs:
+  - name: ca_certs
+    release: os-conf
+    properties:
+      certs: ((/concourse/main/bosh_ca_cert))
   - name: docker
     release: docker
     properties:
@@ -22,13 +26,45 @@ instance_groups:
     properties:
       containers:
         - name: gitlab
-          image: "gitlab/gitlab-ce"
-          tag: "latest"
+          image: "bosh/gitlab-ce"
           bind_ports:
             - "443:443"
             - "80:80"
-          bind_volumes: [/etc/gitlab]
-          env_vars:
+          # bind_volumes: [/etc/gitlab ]
+          volumes: [ "/etc/ssl/certs:/etc/gitlab/trusted-certs" ]
+          # env_vars:
+          dockerfile: |
+            FROM gitlab/gitlab-ce
+            RUN echo " \n\
+              gitlab_rails['omniauth_enabled'] = true \n\
+              gitlab_rails['omniauth_allow_single_sign_on'] = ['oauth2_generic'] \n\
+              gitlab_rails['omniauth_block_auto_created_users'] = false \n\
+              gitlab_rails['omniauth_providers'] = [ \n\
+                { \n\
+                  'name' => 'oauth2_generic', \n\
+                  'app_id' => 'gitlab', \n\
+                  'app_secret' => 'foobar', \n\
+                  'args' => { \n\
+                    client_options: { \n\
+                      'site' => 'https://192.168.50.6:8443', # including port if necessary \n\
+                      'user_info_url' => '/userinfo' \n\
+                    }, \n\
+                    user_response_structure: { \n\
+                      #root_path: ['data', 'user'], # i.e. if attributes are returned in JsonAPI format (in a 'user' node nested under a 'data' node) \n\
+                      attributes: { nickname: 'user_name' } # if the nickname attribute of a user is called 'username' \n\
+                    }, \n\
+                    # optionally, you can add the following two lines to 'white label' the display name \n\
+                    # of this strategy (appears in urls and Gitlab login buttons) \n\
+                    # If you do this, you must also replace oauth2_generic, everywhere it appears above, with the new name.  \n\
+                 #   name: 'Satorix', # display name for this strategy \n\
+                  #  strategy_class: 'OmniAuth::Strategies::OAuth2Generic', # Devise-specific config option Gitlab uses to find renamed strategy \n\
+                    redirect_url: 'http://10.244.0.2/users/auth/oauth2_generic/callback' \n\
+                  } \n\
+                } \n\
+              ] \n\
+              " >> /opt/gitlab/etc/gitlab.rb.template
+            RUN cat /opt/gitlab/etc/gitlab.rb.template
+
 
 variables:
 - name: docker-ca
@@ -57,6 +93,10 @@ update:
   serial: false
 
 releases:
+- name: os-conf
+  version: 19
+  url: https://bosh.io/d/github.com/cloudfoundry/os-conf-release?v=19
+  sha1: f515406949ee0bba0329d1ce4a7eb1679521eabd
 - name: docker
   version: 31.0.1
   url: https://github.com/cloudfoundry-community/docker-boshrelease/releases/download/v31.0.1/docker-31.0.1.tgz
