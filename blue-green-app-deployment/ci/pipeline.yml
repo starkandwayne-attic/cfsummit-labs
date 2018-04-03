@@ -1,51 +1,3 @@
-groups:
-- name: main
-  jobs:
-  - unit-tests
-  - load-tests
-  - promote-new-version
-
-resources:
-- name: concourse-pipeline-samples
-  type: git
-  source:
-    branch: master
-    uri: https://github.com/starkandwayne/cfsummit-labs.git
-- name: load-test-app-manifest
-  type: file
-  source:
-    filename: manifest.yml
-    content:
-      applications:
-      - name: load-test-((pws-app-suffix))
-        hostname: load-test-((pws-app-suffix))
-- name: staging-app-manifest
-  type: file
-  source:
-    filename: manifest.yml
-    content:
-      applications:
-      - name: staging-((pws-app-suffix))
-        hostname: load-test-((pws-app-suffix))
-- name: prod-app-manifest
-  type: file
-  source:
-    filename: manifest.yml
-    content:
-      applications:
-      - name: ((pws-app-suffix))
-        instances: 2
-        hostname: ((pws-app-suffix))
-- name: PWS
-  type: cf
-  source:
-    api: ((pws-api))
-    organization: ((pws-organization))
-    username: ((deploy-username))
-    password: ((deploy-password))
-    skip_cert_check: true
-    space: ((pws-space))
-
 jobs:
 - name: unit-tests
   serial: true
@@ -65,14 +17,14 @@ jobs:
     - get: concourse-pipeline-samples
       trigger: true
       passed: [ unit-tests ]
-  - put: PWS
+  - put: cf
     params:
       manifest: load-test-app-manifest/manifest.yml
       path: concourse-pipeline-samples/blue-green-app-deployment/bgd-app
   - task: run-load-tests
     file: concourse-pipeline-samples/blue-green-app-deployment/ci/tasks/load-tests.yml
     params:
-      APP_URL: http://load-test-((pws-app-suffix)).((pws-app-domain))
+      APP_URL: http://load-test-((app-suffix)).((app-domain))
 # TODO: delete app after succefull test
 
 
@@ -83,16 +35,15 @@ jobs:
   - aggregate:
     - get: staging-app-manifest
     - get: concourse-pipeline-samples
-      trigger: false
+      trigger: true
       passed: [ load-tests ]
-  - put: PWS
+  - put: cf
     params:
       manifest: staging-app-manifest/manifest.yml
       path: concourse-pipeline-samples/blue-green-app-deployment/bgd-app
-      current_app_name: ((pws-app-suffix))
+      current_app_name: ((app-suffix))
 
-
-- name: promote-new-version
+- name: deploy-prod
   serial: true
   public: true
   plan:
@@ -100,12 +51,53 @@ jobs:
     - get: prod-app-manifest
     - get: concourse-pipeline-samples
       trigger: false
-      passed: [ load-tests ]
-  - put: PWS
+      passed: [ deploy-staging ]
+  - put: cf
     params:
       manifest: prod-app-manifest/manifest.yml
       path: concourse-pipeline-samples/blue-green-app-deployment/bgd-app
-      current_app_name: ((pws-app-suffix))
+      current_app_name: ((app-suffix))
+
+resources:
+- name: concourse-pipeline-samples
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/starkandwayne/cfsummit-labs.git
+- name: load-test-app-manifest
+  type: file
+  source:
+    filename: manifest.yml
+    content:
+      applications:
+      - name: load-test-((app-suffix))
+        hostname: load-test-((app-suffix))
+- name: staging-app-manifest
+  type: file
+  source:
+    filename: manifest.yml
+    content:
+      applications:
+      - name: staging-((app-suffix))
+        hostname: load-test-((app-suffix))
+- name: prod-app-manifest
+  type: file
+  source:
+    filename: manifest.yml
+    content:
+      applications:
+      - name: ((app-suffix))
+        instances: 2
+        hostname: ((app-suffix))
+- name: cf
+  type: cf
+  source:
+    api: ((api))
+    organization: ((organization))
+    username: ((username))
+    password: ((password))
+    skip_cert_check: true
+    space: ((space))
 
 resource_types:
 - name: file
