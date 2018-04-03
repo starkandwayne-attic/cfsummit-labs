@@ -18,9 +18,14 @@ resources:
     content:
       applications:
       - name: load-test-((pws-app-suffix))
-        command: node index.js
-        buildpack: https://github.com/cloudfoundry/buildpack-nodejs.git
-        instances: 1
+        hostname: load-test-((pws-app-suffix))
+- name: staging-app-manifest
+  type: file
+  source:
+    filename: manifest.yml
+    content:
+      applications:
+      - name: staging-((pws-app-suffix))
         hostname: load-test-((pws-app-suffix))
 - name: prod-app-manifest
   type: file
@@ -29,9 +34,7 @@ resources:
     content:
       applications:
       - name: ((pws-app-suffix))
-        command: node index.js
-        buildpack: https://github.com/cloudfoundry/buildpack-nodejs.git
-        instances: 1
+        instances: 2
         hostname: ((pws-app-suffix))
 - name: PWS
   type: cf
@@ -70,7 +73,23 @@ jobs:
     file: concourse-pipeline-samples/blue-green-app-deployment/ci/tasks/load-tests.yml
     params:
       APP_URL: http://load-test-((pws-app-suffix)).((pws-app-domain))
-# TODO: delete app after succefull test      
+# TODO: delete app after succefull test
+
+
+- name: deploy-staging
+  serial: true
+  public: true
+  plan:
+  - aggregate:
+    - get: staging-app-manifest
+    - get: concourse-pipeline-samples
+      trigger: false
+      passed: [ load-tests ]
+  - put: PWS
+    params:
+      manifest: staging-app-manifest/manifest.yml
+      path: concourse-pipeline-samples/blue-green-app-deployment/bgd-app
+      current_app_name: ((pws-app-suffix))
 
 
 - name: promote-new-version
@@ -80,7 +99,7 @@ jobs:
   - aggregate:
     - get: prod-app-manifest
     - get: concourse-pipeline-samples
-      trigger: true
+      trigger: false
       passed: [ load-tests ]
   - put: PWS
     params:
