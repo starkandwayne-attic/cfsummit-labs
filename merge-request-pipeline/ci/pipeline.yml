@@ -1,0 +1,35 @@
+jobs:
+- name: merge-request
+  serial: true
+  public: true
+  plan:
+  - get: repo-mr
+    trigger: true
+  - task: run-tests
+    file: repo-mr/merge-request-pipeline/ci/tasks/tests/task.yml
+  on_failure:
+    put: repo-mr
+    params:
+      repository: repo-mr
+      status: failed
+  on_success:
+    put: repo-mr
+    params:
+      repository: repo-mr
+      status: success
+resources:
+- name: repo-mr
+  type: merge-request
+  source:
+    uri: http://10.244.0.2/starkandwayne/cfsummit-labs.git
+    username: ((git_name))
+    password: ((git_pass))
+    private_token: ((git_token))
+    no_ssl: true
+
+resource_types:
+- name: merge-request
+  type: docker-image
+  source:
+    repository: mastertinner/gitlab-merge-request-resource
+
