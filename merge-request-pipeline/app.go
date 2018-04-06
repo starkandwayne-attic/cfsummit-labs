@@ -21,6 +21,8 @@ func (a *App) Run(addr string) {
   http.ListenAndServe(":8000", a.Router)
 }
 func (a *App) initializeRoutes() {
+// TODO uncomment
+//  a.Router.HandleFunc("/todos/", a.getAll).Methods("GET")
   a.Router.HandleFunc("/todo/{id}", a.getToDo).Methods("GET")
   a.Router.HandleFunc("/todo/finish/{id}", a.finishToDo).Methods("PUT")
   a.Router.HandleFunc("/todo/", a.putToDo).Methods("PUT")
@@ -71,3 +73,10 @@ func (a *App) getToDo(w http.ResponseWriter, r *http.Request) {
   json.NewEncoder(buf).Encode(&toDo)
   respondWithJSON(w, http.StatusOK, toDo)
 }
+//func (a *App) getAll(w http.ResponseWriter, r *http.Request) {
+//  toDos := make(ToDoCollection,0)
+//  toDos.getAll(a.DB)
+//  buf := new(bytes.Buffer)
+//  json.NewEncoder(buf).Encode(&toDos)
+//  respondWithJSON(w, http.StatusOK, toDos)
+//}

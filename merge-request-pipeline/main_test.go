@@ -66,6 +66,22 @@ func TestGetToDo(t *testing.T){
     fmt.Println(toDo.UID)
   }
 }
+//func TestGetAll(t *testing.T){
+//  req, _ := http.NewRequest("GET", "/todos/", nil)
+//  response := executeRequest(req)
+//  checkResponseCode(t, http.StatusOK, response.Code)
+//  if body := response.Body.String(); body == "[]" {
+//    t.Errorf("Expected an non empty answer. Got %s", body)
+//  }else{
+//    buf := new(bytes.Buffer)
+//    buf.ReadFrom(response.Body)
+//    var toDos main.ToDoCollection
+//    json.NewDecoder(buf).Decode(&toDos)
+//    for _, toDo := range toDos{
+//      fmt.Println(toDo.UID)
+//    }
+//  }
+//}
 func TestPutToDo(t *testing.T){
   toDo := main.ToDo{Name: "Third", UID: "", Created: time.Now().String(), Done: "unfinished"}
   buf := new(bytes.Buffer)

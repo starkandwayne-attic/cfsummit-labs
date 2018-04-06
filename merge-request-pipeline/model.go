@@ -5,6 +5,7 @@ import (
   "github.com/google/uuid"
   "fmt"
   "time"
+//  "encoding/json"
 )
 
 type ToDo struct {
@@ -13,7 +14,17 @@ type ToDo struct {
   Created   string      `json:"created"`
   Done      string      `json:"done"`
 }
+//type ToDoCollection []ToDo
 
+//func (toDos *ToDoCollection) getAll(db *scribble.Driver) {
+//  records, _ := db.ReadAll("toDo")
+//
+//  for _, record := range records{
+//    toDo := ToDo{}
+//    json.Unmarshal([]byte(record), &toDo)
+//    *toDos=append(*toDos, toDo)
+//  }
+//}
 func (toDo *ToDo) getToDo(db *scribble.Driver) {
   db.Read("toDo", toDo.UID, &toDo)
 }
