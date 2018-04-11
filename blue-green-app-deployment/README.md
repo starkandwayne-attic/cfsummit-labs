@@ -20,7 +20,12 @@ The steps automated in the pipeline are as follows:
 1. **Perform load tests**  
    The pipeline runs load tests on the newly deployed application instance using the [Artillery framework](https://artillery.io/docs/getting-started/).
 
-1. **Promote new application version to production**  
+1. **Promote new application version to staging**  
+  deploy the new application to a staging environment for manual quality assurance.
+  and after that we can manually promote to production
+
+1. **Promote new application version to production**
+   #triggered manually#
    Using Cloud Foundry's route management capabilities, the pipeline switches the route of your main application URL (e.g. http://main-app-hello.cfapps.io/ ) to point to the new application instance's URL with no downtime for external users.
 
 Each pipeline step is configured to run automatically only if the previous step has been successfully executed.
@@ -35,39 +40,26 @@ For you to inspect which instance is being used by the main route, simply point 
 
 ![Main application screenshot](https://raw.githubusercontent.com/pivotalservices/concourse-pipeline-samples/master/common/images/bgapp-screenshot-b.jpg)
 
-
-## Pre-requisites to setup this example on your Concourse server
-
-The requirements for this pipeline's setup are as follows:
-
-1. An instance of Concourse installed either as a local vagrant machine or as a remote server.  
-   Please refer to the documentation on [how to install Concourse](http://concourse-ci.org/installing.html) or to article [Deploying Concourse on Bosh-lite](https://github.com/pivotalservices/concourse-pipeline-samples/tree/master/concourse-on-bosh-lite).
-
-1. The Concourse Fly command line interface is installed on the local VM.  
-   The Fly cli can be downloaded directly from the link provided on the Concourse web interface.  
-   Please refer to the [Fly cli documentation](http://concourse-ci.org/fly-cli.html) for details.
-
-
 ## Pipeline setup and execution
 
 How to setup this sample pipeline on your Concourse server:
 
 1. Clone this git repository on your local machine  
    __clone https://github.com/pivotalservices/concourse-pipeline-samples.git__  
-   __cd concourse-pipeline-samples/blue-green-app-deployment__
+   __cd starkandwayne/cfsummit-lab__
 
 1. Setup the pipeline credentials file
   * Make a copy of the sample credentials file  
   __cp ci/credentials.yml.sample ci/credentials.yml__  
 
   * Edit _ci/credentials.yml_ and fill out all the required credentials:  
-_deploy-username:_ the CF CLI userID to deploy apps on the Cloud Foundry deployment  
-_deploy-password:_ the corresponding password to deploy apps on the Cloud Foundry deployment  
-_pws-organization:_ the ID of your targeted organization in Cloud Foundry   
-_pws-space:_ the name of your targeted space in Cloud Foundry (e.g. development)  
-_pws-api:_ the url of the CF API. (e.g. https://api.run.pivotal.io)  
-_pws-app-suffix:_ the domain suffix to append to the application hostname (e.g. my-test-app)  
-_pws-app-domain:_ the domain name used for your CF apps (e.g. cfapps.io)   
+_username:_ the CF CLI userID to deploy apps on the Cloud Foundry deployment  
+_password:_ the corresponding password to deploy apps on the Cloud Foundry deployment  
+_organization:_ the ID of your targeted organization in Cloud Foundry   
+_space:_ the name of your targeted space in Cloud Foundry (e.g. development)  
+_api:_ the url of the CF API. (e.g. https://api.run.pivotal.io)  
+_app-suffix:_ the domain suffix to append to the application hostname (e.g. my-test-app)  
+_app-domain:_ the domain name used for your CF apps (e.g. cfapps.io)   
 
 3. Configure the sample pipeline in Concourse with the following commands:  
    __fly -t local login <concourse-url>__  
