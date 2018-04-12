@@ -1,24 +1,30 @@
 # Environment
+For this lab we will be using the following systems:
+
+| UAA       | https://146.148.24.245:8443 |
+| Concourse | https://146.148.24.245      |
+| Gitlab    | http://104.155.34.223       |
+| jumpbox   | 35.205.178.58:22            |
+
+For all systems use your UAA account credentials
 
 # Setup
-```
-git clone <cfsummit-repo-url>
-cd <repo>
 
-vi merge-request-pipeline/ci/pipeline.yml #Set Pipeline Credentials
-fly -t <target> sp -p merge-request-example -c merge-request-pipeline/ci/pipeline.yml -l merge-request-pipeline/ci/creds.yml
+## lab repo in gitlab
+Login as gitlab root user
+Create a lab group via the gitlab ui.
+Import the https://github.com/starkandwayne/cfsummit-labs repo under the lab group.
+Make sure the make the cfsummit-labs repo public.
+
+## gitlab admin token in credhub
+Login as gitlab root user
+Go to: http://104.155.34.223/profile/personal_access_tokens
+create a token named `ci` with `api` scope.
+
 ```
+credhub set -n /concourse/main/git_token -t value -v {token}
+credhub set -n /concourse/main/git_name -t value -v root
+credhub set -n /concourse/main/git_pass -t value -v {admin_password}
+```
+
 # Issues
-Beware the resource requires GITLAB API Token. If you are using a UAA User for auth, the password needs to be the UAA Token.
-UAA_USER:
-```
-  git_username: uaa_username
-  git_password: git_ap_token_for_uaa_user
-  git_token: git_ap_token_for_uaa_user
-```
-GIT_NATIVE_USER:
-```
-  git_username: git_username
-  git_password: git_password
-  git_token: git_ap_token_for_uaa_user  
-```
