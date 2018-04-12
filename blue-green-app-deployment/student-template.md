@@ -3,11 +3,11 @@
 ## Learning Objectives
 
 ## Prerequisites
-UAA Account (create one at https://146.148.24.245:8443/create_account)
-Access to Concourse https://146.148.24.245
-Access to Gitlab http://104.155.34.223 (login wiht `oauth generic` option)
-SSH to jumpbox (ssh "YOURUSERNAME@MAIL"@35.205.178.58)
-Access to CF
+- UAA Account (create one at https://146.148.24.245:8443/create_account)
+- Access to Concourse https://146.148.24.245
+- Access to Gitlab http://104.155.34.223 (login wiht `oauth generic` option)
+- SSH to jumpbox (ssh "YOURUSERNAME@MAIL"@35.205.178.58)
+- Access to CF
 
 ## Lab
 login to the jumpbox
