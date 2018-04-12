@@ -21,7 +21,7 @@ resources:
 - name: repo-mr
   type: merge-request
   source:
-    uri: http://10.244.0.2/starkandwayne/cfsummit-labs.git
+    uri: ((git_remote))
     username: ((git_name))
     password: ((git_pass))
     private_token: ((git_token))
@@ -32,4 +32,3 @@ resource_types:
   type: docker-image
   source:
     repository: mastertinner/gitlab-merge-request-resource
-
