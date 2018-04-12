@@ -63,7 +63,7 @@ resources:
   type: git
   source:
     branch: master
-    uri: https://github.com/starkandwayne/cfsummit-labs.git
+    uri: ((git_remote))
 - name: load-test-app-manifest
   type: file
   source:
