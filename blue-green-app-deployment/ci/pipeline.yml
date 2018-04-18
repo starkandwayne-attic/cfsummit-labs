@@ -41,7 +41,7 @@ jobs:
     params:
       manifest: staging-app-manifest/manifest.yml
       path: concourse-pipeline-samples/blue-green-app-deployment/bgd-app
-      current_app_name: ((app-suffix))
+      current_app_name: ((app-name))
 
 - name: deploy-prod
   serial: true
