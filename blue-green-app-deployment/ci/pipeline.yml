@@ -97,6 +97,7 @@ resources:
     username: ((username))
     password: ((password))
     skip_cert_check: true
+    current_app_name: ((app-name))
     space: ((space))
 
 resource_types:
